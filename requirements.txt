@@ -1,0 +1,18 @@
+# Reference repo README reports: scanpy 1.9.3.
+# AnnData 0.12.x is not compatible with Scanpy 1.9.3 because AnnData removed
+# APIs used by this Scanpy release. Use AnnData 0.8.x for the Scanpy 1.9.3
+# workflow, and document the mismatch with the paper-reported AnnData 0.12.8.
+python-dotenv>=1.0
+scanpy==1.9.3
+anndata==0.8.0
+pandas>=1.5,<2.1
+numpy>=1.23,<1.26
+scipy>=1.9,<1.12
+scikit-learn>=1.1,<1.4
+matplotlib>=3.6,<3.8
+seaborn>=0.12
+PyYAML==6.0.1
+h5py>=3.8,<3.11
+umap-learn==0.5.3
+python-igraph==0.10.4
+leidenalg==0.9.1

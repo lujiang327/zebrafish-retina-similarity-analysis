@@ -1,0 +1,28 @@
+cell_type,condition,n_cells
+AC,Control,13751
+AC,LD,342
+AC,NMDA,1424
+BC,Control,62885
+BC,LD,545
+BC,NMDA,848
+Cones,Control,10127
+Cones,LD,372
+Cones,NMDA,424
+HC,Control,17989
+HC,LD,692
+HC,NMDA,1070
+MG,Control,8707
+MG,LD,4835
+MG,NMDA,4611
+MGPC,Control,1515
+MGPC,LD,1743
+MGPC,NMDA,2273
+PR precursors,Control,1175
+PR precursors,LD,1619
+PR precursors,NMDA,2140
+RGC,Control,4299
+RGC,LD,157
+RGC,NMDA,456
+Rod,Control,6384
+Rod,LD,886
+Rod,NMDA,2120

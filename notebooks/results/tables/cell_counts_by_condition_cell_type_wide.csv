@@ -1,0 +1,16 @@
+cell_type,Control,LD,NMDA
+AC,13751,342,1424
+BC,62885,545,848
+Cones,10127,372,424
+Endothelial,759,0,3
+HC,17989,692,1070
+MG,8707,4835,4611
+MGPC,1515,1743,2273
+Melanocyte,360,0,3
+Microglia_ImmuneCells,2335,16,34
+Oligodenrocyte,687,2,11
+PR precursors,1175,1619,2140
+Perycites,1465,2,7
+RGC,4299,157,456
+RPE,1799,3,0
+Rod,6384,886,2120

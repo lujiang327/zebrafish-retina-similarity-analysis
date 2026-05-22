@@ -1,0 +1,24 @@
+name: retina-fidelity
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - scanpy=1.9.3
+  - anndata=0.8.0
+  - pandas>=1.5,<2.1
+  - numpy>=1.23,<1.26
+  - scipy>=1.9,<1.12
+  - scikit-learn>=1.1,<1.4
+  - matplotlib>=3.6,<3.8
+  - seaborn>=0.12
+  - pyyaml=6.0.1
+  - h5py>=3.8,<3.11
+  - umap-learn=0.5.3
+  - python-igraph=0.10.4
+  - leidenalg=0.9.1
+  - pip:
+      - python-dotenv>=1.0
+variables:
+  MPLCONFIGDIR: /tmp/mpl-cache
+  NUMBA_CACHE_DIR: /tmp/numba-cache

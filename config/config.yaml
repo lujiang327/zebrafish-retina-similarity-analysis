@@ -1,0 +1,86 @@
+# Main analysis configuration.
+# Copy this file if you need project-specific variants.
+
+data:
+  # Keep large .h5ad files out of git. This default matches the local filename
+  # reported by the reference repository README.
+  h5ad_path: "annotated_clustered_corrected_doubletRemoved_Zebrafishes.h5ad"
+
+metadata:
+  # Leave null to auto-detect from adata.obs. Set explicitly after inspection.
+  condition_column: null
+  cell_type_column: null
+  sample_column: null
+
+  control_label: "Control"
+  injury_labels: ["LD", "NMDA"]
+  condition_order: ["Control", "LD", "NMDA"]
+
+  # Candidate columns used only for auto-detection.
+  condition_column_candidates:
+    - "renamed_samples"
+    - "condition"
+    - "Condition"
+    - "sample"
+    - "Sample"
+    - "orig.ident"
+  cell_type_column_candidates:
+    - "celltype"
+    - "cell_type"
+    - "CellType"
+    - "annotation"
+    - "annotations"
+    - "manual_annotation"
+    - "major_celltype"
+
+cell_types:
+  include:
+    - "Rod"
+    - "Cones"
+    - "Cone"
+    - "BC"
+    - "Bipolar cell"
+    - "AC"
+    - "Amacrine cell"
+    - "HC"
+    - "Horizontal cell"
+    - "RGC"
+    - "MG"
+    - "Muller glia"
+    - "Müller glia"
+    - "MGPC"
+    - "PR precursors"
+    - "PR precursor"
+  exclude:
+    - "Microglia_ImmuneCells"
+    - "immune"
+    - "microglia"
+    - "Endothelial"
+    - "RPE"
+    - "Perycites"
+    - "Pericyte"
+    - "Melanocyte"
+    - "Oligodenrocyte"
+    - "Oligodendrocyte"
+
+analysis:
+  random_state: 0
+  min_cells_per_group: 30
+  use_raw_if_available: true
+  layer: null
+
+  gene_sets:
+    hvg_n_top_genes: [500, 1000, 2000]
+    min_mean_expression: 0.0
+    marker_genes: {}
+
+  similarity_metrics:
+    - "pearson"
+    - "spearman"
+    - "cosine"
+
+outputs:
+  tables_dir: "results/tables"
+  figures_dir: "results/figures"
+  figure_dpi: 300
+  figure_format: "png"
