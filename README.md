@@ -108,6 +108,125 @@ python scripts/plot_umap.py --config config/config.yaml
 python scripts/plot_umap.py --config config/config.yaml --retinal-only
 ```
 
+## Analysis 1: Pseudobulk Cell-Type Similarity
+
+Interactive notebook:
+
+```text
+notebooks/02_pseudobulk_similarity.ipynb
+```
+
+Scripted run:
+
+```bash
+python scripts/pseudobulk_similarity.py --config config/config.yaml
+```
+
+This analysis:
+
+- subsets to retinal-focused cell types from `config/config.yaml`
+- computes a pseudobulk mean expression profile for each cell type and condition
+- keeps `Control`, `LD`, and `NMDA` separate
+- compares `Control_vs_LD`, `Control_vs_NMDA`, and `LD_vs_NMDA`
+- tests Pearson, Spearman, and cosine similarity
+- repeats over shared expressed genes and configured HVG counts
+- flags comparisons below the minimum cell-count threshold
+
+Main outputs:
+
+```text
+results/tables/pseudobulk_similarity_scores.csv
+results/tables/pseudobulk_group_metadata.csv
+results/tables/pseudobulk_skipped_cell_types.csv
+results/figures/pseudobulk_similarity_*.png
+```
+
+Panel-style cross-cell-type heatmaps, matching the layout of manuscript panels
+A/B/C, can be generated with:
+
+```bash
+python scripts/celltype_similarity_heatmaps.py --config config/config.yaml
+```
+
+This produces one 3-panel figure for each metric and gene set:
+
+```text
+results/figures/celltype_similarity_panels_cosine_shared_expressed.png
+results/figures/celltype_similarity_panels_cosine_hvg_1000.png
+results/figures/celltype_similarity_panels_cosine_hvg_2000.png
+results/figures/celltype_similarity_panels_pearson_shared_expressed.png
+results/figures/celltype_similarity_panels_pearson_hvg_1000.png
+results/figures/celltype_similarity_panels_pearson_hvg_2000.png
+results/figures/celltype_similarity_panels_spearman_shared_expressed.png
+results/figures/celltype_similarity_panels_spearman_hvg_1000.png
+results/figures/celltype_similarity_panels_spearman_hvg_2000.png
+```
+
+## Analysis 2: Per-Cell Fidelity
+
+Interactive notebook:
+
+```text
+notebooks/03_per_cell_fidelity.ipynb
+```
+
+Scripted run:
+
+```bash
+python scripts/per_cell_fidelity.py --config config/config.yaml
+```
+
+This analysis:
+
+- works within each retinal cell type
+- splits Control cells into a reference set and held-out Control cells
+- builds a Control reference centroid from the reference split
+- scores held-out Control, LD, and NMDA cells against that same-cell-type centroid
+- outputs per-cell fidelity scores and condition summaries
+- plots combined violin distributions, per-cell-type box plots, and a UMAP score overlay
+
+Main outputs:
+
+```text
+results/tables/per_cell_fidelity_scores.csv
+results/tables/per_cell_fidelity_summary.csv
+results/tables/per_cell_fidelity_skipped_cell_types.csv
+results/figures/per_cell_fidelity_*.png
+results/figures/umap_per_cell_fidelity_*.png
+```
+
+## Analysis 3: Three-Group Similarity Views
+
+Interactive notebook:
+
+```text
+notebooks/04_three_group_similarity.ipynb
+```
+
+Scripted run:
+
+```bash
+python scripts/three_group_similarity.py --config config/config.yaml
+```
+
+This analysis uses the same cell-type/condition pseudobulk centroids, but
+visualizes Control, LD, and NMDA together:
+
+- Control-referenced heatmaps with LD and NMDA shown side by side
+- Delta heatmaps showing `Control_vs_NMDA - Control_vs_LD`
+- Three-condition centroid PCA plots
+
+Main outputs:
+
+```text
+results/tables/three_group_control_referenced_similarity.csv
+results/tables/three_group_nmda_minus_ld_delta.csv
+results/tables/three_group_centroids.csv
+results/figures/three_group_control_referenced_*.png
+results/figures/three_group_delta_nmda_minus_ld_*.png
+results/figures/three_group_centroid_pca_*.png
+```
+
 ## Metadata Configuration
 
 Do not hard-code metadata columns in scripts. Set these after inspection:

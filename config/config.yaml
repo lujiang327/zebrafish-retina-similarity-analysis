@@ -71,13 +71,34 @@ analysis:
 
   gene_sets:
     hvg_n_top_genes: [500, 1000, 2000]
+    hvg_flavor: "seurat"
     min_mean_expression: 0.0
-    marker_genes: {}
+    marker_genes:
+      Rod: ["Rho", "Gnat1", "Pde6a", "Pde6b", "Cnga1", "Nr2e3", "Nrl", "Prph2", "Rom1"]
+      Cone: ["Pde6h", "Arr3", "Opn1mw", "Gnat2", "Pde6c", "Opn1sw"]
+      Cones: ["Pde6h", "Arr3", "Opn1mw", "Gnat2", "Pde6c", "Opn1sw"]
+      BC: ["Vsx1", "Vsx2", "Car10", "Prkca", "Sebox", "Scgn", "Cabp5", "Grm6", "Otx2os1", "Gng13", "Nrxn3", "Gabrb3", "Trnp1", "Kcnma1", "Frmd3", "Gm4792", "Nyap2"]
+      AC: ["Tfap2a", "Tfap2b", "Pax6", "Frmd5", "Nrg3", "Elavl3", "Slc32a1", "Slc6a9", "Dcx", "Chat", "Gad1", "Gad2"]
+      MG: ["Rlbp1", "Glul", "Dkk3", "Adamtsl1", "Gpr37", "Abca8a", "Rgs6", "Spc25", "Clu", "Apoe", "Aqp4"]
+      HC: ["Calb1", "Onecut1", "Slc4a3", "Onecut2", "Gm45459", "C1ql1"]
+      RGC: ["Nefl", "Stmn2", "Nrn1", "Pou4f1", "Pou4f2", "Sncg", "Rbpms"]
+      RPE: ["Ttr", "Rdh5", "Rpe65", "Rgr", "Slc16a8"]
+      Astrocyte: ["S100b", "Gfap", "Pax2", "Pdgfra", "Mlc1", "Prdx6"]
+      Microglia: ["Ctss", "C1qa", "Hexb", "Trem2"]
+      Endothelial: ["Cldn5", "Flt1", "Pecam1", "Ly6c1", "Ptprb"]
+      Pericyte: ["Kcnj8", "Acta2", "Pdgfra"]
 
   similarity_metrics:
     - "pearson"
     - "spearman"
     - "cosine"
+
+  per_cell_fidelity:
+    gene_sets: ["hvg_1000"]
+    metrics: ["pearson", "spearman", "cosine"]
+    control_reference_fraction: 0.7
+    default_plot_gene_set: "hvg_1000"
+    default_plot_metric: "pearson"
 
 outputs:
   tables_dir: "results/tables"

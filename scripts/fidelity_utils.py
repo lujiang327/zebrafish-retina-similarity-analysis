@@ -6,6 +6,9 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+from scipy import sparse
+from scipy.spatial.distance import cosine as cosine_distance
+from scipy.stats import pearsonr, spearmanr
 import yaml
 
 
@@ -112,7 +115,9 @@ def normalize_labels(series: pd.Series) -> pd.Series:
     return series.astype(str).str.strip()
 
 
-def retinal_cell_type_mask(obs: pd.DataFrame, cell_type_column: str, config: dict[str, Any]) -> pd.Series:
+def retinal_cell_type_mask(
+    obs: pd.DataFrame, cell_type_column: str, config: dict[str, Any]
+) -> pd.Series:
     labels = normalize_labels(obs[cell_type_column])
     cell_cfg = config.get("cell_types", {})
     include = cell_cfg.get("include") or []
@@ -162,3 +167,50 @@ def as_dense_vector(matrix: Any) -> np.ndarray:
     if hasattr(matrix, "toarray"):
         matrix = matrix.toarray()
     return np.asarray(matrix).ravel()
+
+
+def get_expression_source(adata: Any, config: dict[str, Any]) -> tuple[Any, np.ndarray, str]:
+    analysis = config.get("analysis", {})
+    layer = analysis.get("layer")
+    use_raw = bool(analysis.get("use_raw_if_available", True))
+
+    if layer:
+        if layer not in adata.layers:
+            raise KeyError(f"Configured layer not found in adata.layers: {layer}")
+        return adata.layers[layer], adata.var_names.to_numpy(), f"layer:{layer}"
+
+    if use_raw and adata.raw is not None:
+        return adata.raw.X, adata.raw.var_names.to_numpy(), "raw.X"
+
+    return adata.X, adata.var_names.to_numpy(), "X"
+
+
+def mean_expression_by_mask(matrix: Any, mask: np.ndarray) -> np.ndarray:
+    subset = matrix[mask]
+    if subset.shape[0] == 0:
+        raise ValueError("Cannot compute mean expression for an empty cell group.")
+    if sparse.issparse(subset):
+        return np.asarray(subset.mean(axis=0)).ravel()
+    return np.asarray(subset).mean(axis=0).ravel()
+
+
+def finite_similarity(x: np.ndarray, y: np.ndarray, metric: str) -> float:
+    valid = np.isfinite(x) & np.isfinite(y)
+    x = x[valid]
+    y = y[valid]
+    if x.size < 2:
+        return np.nan
+
+    if np.allclose(x, x[0]) or np.allclose(y, y[0]):
+        return np.nan
+
+    if metric == "pearson":
+        return float(pearsonr(x, y).statistic)
+    if metric == "spearman":
+        return float(spearmanr(x, y).statistic)
+    if metric == "cosine":
+        if np.linalg.norm(x) == 0 or np.linalg.norm(y) == 0:
+            return np.nan
+        return float(1 - cosine_distance(x, y))
+
+    raise ValueError(f"Unsupported similarity metric: {metric}")

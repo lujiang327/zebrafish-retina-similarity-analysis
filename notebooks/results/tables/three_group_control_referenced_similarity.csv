@@ -1,0 +1,163 @@
+cell_type,comparison,condition_a,condition_b,metric,gene_set,n_genes,similarity
+AC,Control_vs_LD,Control,LD,pearson,shared_expressed,24579,0.9054031041171737
+AC,Control_vs_LD,Control,LD,spearman,shared_expressed,24579,0.916177295475629
+AC,Control_vs_LD,Control,LD,cosine,shared_expressed,24579,0.9241812825202942
+AC,Control_vs_NMDA,Control,NMDA,pearson,shared_expressed,24579,0.9053657571383288
+AC,Control_vs_NMDA,Control,NMDA,spearman,shared_expressed,24579,0.9266075846511764
+AC,Control_vs_NMDA,Control,NMDA,cosine,shared_expressed,24579,0.9234115481376648
+BC,Control_vs_LD,Control,LD,pearson,shared_expressed,24579,0.8783200660402107
+BC,Control_vs_LD,Control,LD,spearman,shared_expressed,24579,0.9004294922659365
+BC,Control_vs_LD,Control,LD,cosine,shared_expressed,24579,0.8947516083717346
+BC,Control_vs_NMDA,Control,NMDA,pearson,shared_expressed,24579,0.8973130414924212
+BC,Control_vs_NMDA,Control,NMDA,spearman,shared_expressed,24579,0.9120947359775364
+BC,Control_vs_NMDA,Control,NMDA,cosine,shared_expressed,24579,0.91166752576828
+Cones,Control_vs_LD,Control,LD,pearson,shared_expressed,24579,0.7990964547396053
+Cones,Control_vs_LD,Control,LD,spearman,shared_expressed,24579,0.8697482067300861
+Cones,Control_vs_LD,Control,LD,cosine,shared_expressed,24579,0.820482611656189
+Cones,Control_vs_NMDA,Control,NMDA,pearson,shared_expressed,24579,0.8408208151958436
+Cones,Control_vs_NMDA,Control,NMDA,spearman,shared_expressed,24579,0.8947295775790018
+Cones,Control_vs_NMDA,Control,NMDA,cosine,shared_expressed,24579,0.857517659664154
+HC,Control_vs_LD,Control,LD,pearson,shared_expressed,24579,0.8806987498523053
+HC,Control_vs_LD,Control,LD,spearman,shared_expressed,24579,0.8989149526802342
+HC,Control_vs_LD,Control,LD,cosine,shared_expressed,24579,0.897817075252533
+HC,Control_vs_NMDA,Control,NMDA,pearson,shared_expressed,24579,0.8856743218070605
+HC,Control_vs_NMDA,Control,NMDA,spearman,shared_expressed,24579,0.9048181139879323
+HC,Control_vs_NMDA,Control,NMDA,cosine,shared_expressed,24579,0.9015945196151733
+MG,Control_vs_LD,Control,LD,pearson,shared_expressed,24579,0.8853826272074989
+MG,Control_vs_LD,Control,LD,spearman,shared_expressed,24579,0.9100495655184244
+MG,Control_vs_LD,Control,LD,cosine,shared_expressed,24579,0.9015916585922241
+MG,Control_vs_NMDA,Control,NMDA,pearson,shared_expressed,24579,0.897250218797728
+MG,Control_vs_NMDA,Control,NMDA,spearman,shared_expressed,24579,0.9155839220310676
+MG,Control_vs_NMDA,Control,NMDA,cosine,shared_expressed,24579,0.9110029339790344
+MGPC,Control_vs_LD,Control,LD,pearson,shared_expressed,24579,0.870081229498804
+MGPC,Control_vs_LD,Control,LD,spearman,shared_expressed,24579,0.884585764351619
+MGPC,Control_vs_LD,Control,LD,cosine,shared_expressed,24579,0.8877275586128235
+MGPC,Control_vs_NMDA,Control,NMDA,pearson,shared_expressed,24579,0.8914321646921006
+MGPC,Control_vs_NMDA,Control,NMDA,spearman,shared_expressed,24579,0.906010114018715
+MGPC,Control_vs_NMDA,Control,NMDA,cosine,shared_expressed,24579,0.904906690120697
+PR precursors,Control_vs_LD,Control,LD,pearson,shared_expressed,24579,0.890859617548169
+PR precursors,Control_vs_LD,Control,LD,spearman,shared_expressed,24579,0.8844980286269445
+PR precursors,Control_vs_LD,Control,LD,cosine,shared_expressed,24579,0.9035215377807617
+PR precursors,Control_vs_NMDA,Control,NMDA,pearson,shared_expressed,24579,0.9014874558459809
+PR precursors,Control_vs_NMDA,Control,NMDA,spearman,shared_expressed,24579,0.900346851005814
+PR precursors,Control_vs_NMDA,Control,NMDA,cosine,shared_expressed,24579,0.9108352661132812
+RGC,Control_vs_LD,Control,LD,pearson,shared_expressed,24579,0.8905581163293913
+RGC,Control_vs_LD,Control,LD,spearman,shared_expressed,24579,0.9073438178804122
+RGC,Control_vs_LD,Control,LD,cosine,shared_expressed,24579,0.9114472270011902
+RGC,Control_vs_NMDA,Control,NMDA,pearson,shared_expressed,24579,0.8954044446794686
+RGC,Control_vs_NMDA,Control,NMDA,spearman,shared_expressed,24579,0.9182656313600016
+RGC,Control_vs_NMDA,Control,NMDA,cosine,shared_expressed,24579,0.9151552319526672
+Rod,Control_vs_LD,Control,LD,pearson,shared_expressed,24579,0.7896422606471849
+Rod,Control_vs_LD,Control,LD,spearman,shared_expressed,24579,0.8827988038216856
+Rod,Control_vs_LD,Control,LD,cosine,shared_expressed,24579,0.8206837773323059
+Rod,Control_vs_NMDA,Control,NMDA,pearson,shared_expressed,24579,0.6953467983741595
+Rod,Control_vs_NMDA,Control,NMDA,spearman,shared_expressed,24579,0.8698930743582237
+Rod,Control_vs_NMDA,Control,NMDA,cosine,shared_expressed,24579,0.7406051754951477
+AC,Control_vs_LD,Control,LD,pearson,hvg_1000,1000,0.7960671204759717
+AC,Control_vs_LD,Control,LD,spearman,hvg_1000,1000,0.7793564815107474
+AC,Control_vs_LD,Control,LD,cosine,hvg_1000,1000,0.8529282212257385
+AC,Control_vs_NMDA,Control,NMDA,pearson,hvg_1000,1000,0.7955010139915676
+AC,Control_vs_NMDA,Control,NMDA,spearman,hvg_1000,1000,0.7980023940999141
+AC,Control_vs_NMDA,Control,NMDA,cosine,hvg_1000,1000,0.853090763092041
+BC,Control_vs_LD,Control,LD,pearson,hvg_1000,1000,0.46912305038564084
+BC,Control_vs_LD,Control,LD,spearman,hvg_1000,1000,0.6818572950575936
+BC,Control_vs_LD,Control,LD,cosine,hvg_1000,1000,0.5551995635032654
+BC,Control_vs_NMDA,Control,NMDA,pearson,hvg_1000,1000,0.4578568324336791
+BC,Control_vs_NMDA,Control,NMDA,spearman,hvg_1000,1000,0.7045106954567205
+BC,Control_vs_NMDA,Control,NMDA,cosine,hvg_1000,1000,0.5584293603897095
+Cones,Control_vs_LD,Control,LD,pearson,hvg_1000,1000,0.8138801235172897
+Cones,Control_vs_LD,Control,LD,spearman,hvg_1000,1000,0.6587830074738991
+Cones,Control_vs_LD,Control,LD,cosine,hvg_1000,1000,0.8218854665756226
+Cones,Control_vs_NMDA,Control,NMDA,pearson,hvg_1000,1000,0.8224771004576458
+Cones,Control_vs_NMDA,Control,NMDA,spearman,hvg_1000,1000,0.7304460008453773
+Cones,Control_vs_NMDA,Control,NMDA,cosine,hvg_1000,1000,0.8312260508537292
+HC,Control_vs_LD,Control,LD,pearson,hvg_1000,1000,0.7891044272280705
+HC,Control_vs_LD,Control,LD,spearman,hvg_1000,1000,0.6518929929503327
+HC,Control_vs_LD,Control,LD,cosine,hvg_1000,1000,0.79660964012146
+HC,Control_vs_NMDA,Control,NMDA,pearson,hvg_1000,1000,0.7484077110178035
+HC,Control_vs_NMDA,Control,NMDA,spearman,hvg_1000,1000,0.6809206076180454
+HC,Control_vs_NMDA,Control,NMDA,cosine,hvg_1000,1000,0.7635225653648376
+MG,Control_vs_LD,Control,LD,pearson,hvg_1000,1000,0.8517107826313774
+MG,Control_vs_LD,Control,LD,spearman,hvg_1000,1000,0.7293240946527023
+MG,Control_vs_LD,Control,LD,cosine,hvg_1000,1000,0.8626313805580139
+MG,Control_vs_NMDA,Control,NMDA,pearson,hvg_1000,1000,0.8466432689615379
+MG,Control_vs_NMDA,Control,NMDA,spearman,hvg_1000,1000,0.727951877932749
+MG,Control_vs_NMDA,Control,NMDA,cosine,hvg_1000,1000,0.8595314025878906
+MGPC,Control_vs_LD,Control,LD,pearson,hvg_1000,1000,0.6785443412290224
+MGPC,Control_vs_LD,Control,LD,spearman,hvg_1000,1000,0.7145515366561741
+MGPC,Control_vs_LD,Control,LD,cosine,hvg_1000,1000,0.7131360173225403
+MGPC,Control_vs_NMDA,Control,NMDA,pearson,hvg_1000,1000,0.7024127961577594
+MGPC,Control_vs_NMDA,Control,NMDA,spearman,hvg_1000,1000,0.7468653193035814
+MGPC,Control_vs_NMDA,Control,NMDA,cosine,hvg_1000,1000,0.7375514507293701
+PR precursors,Control_vs_LD,Control,LD,pearson,hvg_1000,1000,0.6721199327904432
+PR precursors,Control_vs_LD,Control,LD,spearman,hvg_1000,1000,0.6736230224212163
+PR precursors,Control_vs_LD,Control,LD,cosine,hvg_1000,1000,0.6958329081535339
+PR precursors,Control_vs_NMDA,Control,NMDA,pearson,hvg_1000,1000,0.6923449427385592
+PR precursors,Control_vs_NMDA,Control,NMDA,spearman,hvg_1000,1000,0.7216999353804989
+PR precursors,Control_vs_NMDA,Control,NMDA,cosine,hvg_1000,1000,0.7153091430664062
+RGC,Control_vs_LD,Control,LD,pearson,hvg_1000,1000,0.7936421437309079
+RGC,Control_vs_LD,Control,LD,spearman,hvg_1000,1000,0.7623141788465704
+RGC,Control_vs_LD,Control,LD,cosine,hvg_1000,1000,0.8350688815116882
+RGC,Control_vs_NMDA,Control,NMDA,pearson,hvg_1000,1000,0.8137097581660684
+RGC,Control_vs_NMDA,Control,NMDA,spearman,hvg_1000,1000,0.7896366584058785
+RGC,Control_vs_NMDA,Control,NMDA,cosine,hvg_1000,1000,0.8522711992263794
+Rod,Control_vs_LD,Control,LD,pearson,hvg_1000,1000,0.7094825474718072
+Rod,Control_vs_LD,Control,LD,spearman,hvg_1000,1000,0.6363285219879731
+Rod,Control_vs_LD,Control,LD,cosine,hvg_1000,1000,0.7407568097114563
+Rod,Control_vs_NMDA,Control,NMDA,pearson,hvg_1000,1000,0.36629020567711174
+Rod,Control_vs_NMDA,Control,NMDA,spearman,hvg_1000,1000,0.6511996336562328
+Rod,Control_vs_NMDA,Control,NMDA,cosine,hvg_1000,1000,0.4389875531196594
+AC,Control_vs_LD,Control,LD,pearson,hvg_2000,2000,0.7812411425796947
+AC,Control_vs_LD,Control,LD,spearman,hvg_2000,2000,0.8218642284972904
+AC,Control_vs_LD,Control,LD,cosine,hvg_2000,2000,0.8362014293670654
+AC,Control_vs_NMDA,Control,NMDA,pearson,hvg_2000,2000,0.799643412882137
+AC,Control_vs_NMDA,Control,NMDA,spearman,hvg_2000,2000,0.8384156277112538
+AC,Control_vs_NMDA,Control,NMDA,cosine,hvg_2000,2000,0.8491904735565186
+BC,Control_vs_LD,Control,LD,pearson,hvg_2000,2000,0.5902179695147295
+BC,Control_vs_LD,Control,LD,spearman,hvg_2000,2000,0.7402004570221364
+BC,Control_vs_LD,Control,LD,cosine,hvg_2000,2000,0.6488552689552307
+BC,Control_vs_NMDA,Control,NMDA,pearson,hvg_2000,2000,0.5904717466016627
+BC,Control_vs_NMDA,Control,NMDA,spearman,hvg_2000,2000,0.7656827255650464
+BC,Control_vs_NMDA,Control,NMDA,cosine,hvg_2000,2000,0.6544092893600464
+Cones,Control_vs_LD,Control,LD,pearson,hvg_2000,2000,0.8392486646832024
+Cones,Control_vs_LD,Control,LD,spearman,hvg_2000,2000,0.7285429963797159
+Cones,Control_vs_LD,Control,LD,cosine,hvg_2000,2000,0.8494818210601807
+Cones,Control_vs_NMDA,Control,NMDA,pearson,hvg_2000,2000,0.853857552799063
+Cones,Control_vs_NMDA,Control,NMDA,spearman,hvg_2000,2000,0.7853002634365358
+Cones,Control_vs_NMDA,Control,NMDA,cosine,hvg_2000,2000,0.8636451363563538
+HC,Control_vs_LD,Control,LD,pearson,hvg_2000,2000,0.8215452959648522
+HC,Control_vs_LD,Control,LD,spearman,hvg_2000,2000,0.7402830347977319
+HC,Control_vs_LD,Control,LD,cosine,hvg_2000,2000,0.8326414823532104
+HC,Control_vs_NMDA,Control,NMDA,pearson,hvg_2000,2000,0.8076144088347434
+HC,Control_vs_NMDA,Control,NMDA,spearman,hvg_2000,2000,0.7604542604451662
+HC,Control_vs_NMDA,Control,NMDA,cosine,hvg_2000,2000,0.8216614127159119
+MG,Control_vs_LD,Control,LD,pearson,hvg_2000,2000,0.8570351536163063
+MG,Control_vs_LD,Control,LD,spearman,hvg_2000,2000,0.8034704418027139
+MG,Control_vs_LD,Control,LD,cosine,hvg_2000,2000,0.8697152137756348
+MG,Control_vs_NMDA,Control,NMDA,pearson,hvg_2000,2000,0.8606537882977786
+MG,Control_vs_NMDA,Control,NMDA,spearman,hvg_2000,2000,0.8031507363281355
+MG,Control_vs_NMDA,Control,NMDA,cosine,hvg_2000,2000,0.8738647699356079
+MGPC,Control_vs_LD,Control,LD,pearson,hvg_2000,2000,0.6699041503583291
+MGPC,Control_vs_LD,Control,LD,spearman,hvg_2000,2000,0.7573025320081215
+MGPC,Control_vs_LD,Control,LD,cosine,hvg_2000,2000,0.7022270560264587
+MGPC,Control_vs_NMDA,Control,NMDA,pearson,hvg_2000,2000,0.6933328038747801
+MGPC,Control_vs_NMDA,Control,NMDA,spearman,hvg_2000,2000,0.7896273320088089
+MGPC,Control_vs_NMDA,Control,NMDA,cosine,hvg_2000,2000,0.7266706228256226
+PR precursors,Control_vs_LD,Control,LD,pearson,hvg_2000,2000,0.7185285183532027
+PR precursors,Control_vs_LD,Control,LD,spearman,hvg_2000,2000,0.7259931336486636
+PR precursors,Control_vs_LD,Control,LD,cosine,hvg_2000,2000,0.7372585535049438
+PR precursors,Control_vs_NMDA,Control,NMDA,pearson,hvg_2000,2000,0.7486880758148127
+PR precursors,Control_vs_NMDA,Control,NMDA,spearman,hvg_2000,2000,0.7679940896316935
+PR precursors,Control_vs_NMDA,Control,NMDA,cosine,hvg_2000,2000,0.7656019330024719
+RGC,Control_vs_LD,Control,LD,pearson,hvg_2000,2000,0.8179412680915402
+RGC,Control_vs_LD,Control,LD,spearman,hvg_2000,2000,0.8167016239675418
+RGC,Control_vs_LD,Control,LD,cosine,hvg_2000,2000,0.8545265793800354
+RGC,Control_vs_NMDA,Control,NMDA,pearson,hvg_2000,2000,0.8337573927358299
+RGC,Control_vs_NMDA,Control,NMDA,spearman,hvg_2000,2000,0.8371766492784172
+RGC,Control_vs_NMDA,Control,NMDA,cosine,hvg_2000,2000,0.8673266768455505
+Rod,Control_vs_LD,Control,LD,pearson,hvg_2000,2000,0.6936813709880878
+Rod,Control_vs_LD,Control,LD,spearman,hvg_2000,2000,0.7216981345788887
+Rod,Control_vs_LD,Control,LD,cosine,hvg_2000,2000,0.730517566204071
+Rod,Control_vs_NMDA,Control,NMDA,pearson,hvg_2000,2000,0.3970779181688483
+Rod,Control_vs_NMDA,Control,NMDA,spearman,hvg_2000,2000,0.7155491583066348
+Rod,Control_vs_NMDA,Control,NMDA,cosine,hvg_2000,2000,0.4737677276134491
