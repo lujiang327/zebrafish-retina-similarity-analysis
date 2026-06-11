@@ -3,6 +3,7 @@
 # APIs used by this Scanpy release. Use AnnData 0.8.x for the Scanpy 1.9.3
 # workflow, and document the mismatch with the paper-reported AnnData 0.12.8.
 python-dotenv>=1.0
+setuptools<81
 scanpy==1.9.3
 anndata==0.8.0
 pandas>=1.5,<2.1
@@ -16,3 +17,4 @@ h5py>=3.8,<3.11
 umap-learn==0.5.3
 python-igraph==0.10.4
 leidenalg==0.9.1
+harmonypy
