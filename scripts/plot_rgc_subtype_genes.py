@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import scanpy as sc
-import harmonypy
 from scipy import sparse
 
 from fidelity_utils import (
@@ -41,6 +40,61 @@ DEFAULT_GENES = [
     "vax2",
     "tbx5a",
     "zic2",
+    "isl2b",
+    "rbpms2a",
+    "rbpms2b",
+    "mafaa",
+    "eomesa",
+    "tbr1b",
+    "elavl3",
+    "cdk1",
+    "nr2e3",
+    "guca1b",
+    "gnat2",
+    "cabp5a",
+    "ompa",
+    "mpeg1.1",
+    "mbpa",
+    "rpe65a",
+    "aqp4",
+    "tie1",
+    "acta2",
+    "mitfa",
+    "efna2a",
+    "efna2b",
+    "zic2a",
+    "zic2b",
+    "gria3a",
+    "crhb",
+    "ccdc80",
+    "tubb5",
+    "six3a",
+    "sgk1",
+    "tacr2",
+    "matn3b",
+    "rasgef1ba",
+    "tac1",
+    "pcdh11",
+    "sdk1a",
+    "ptprt",
+    "gpd1b",
+    "rprma",
+    "tbx3a",
+    "si:dkey-1h6.8",
+    "neurod2",
+    "pgam2",
+    "mfap4",
+    "tox",
+    "id3",
+    "emid1",
+    "ccka",
+    "gulp1b",
+    "plppr2",
+    "pyyb",
+    "dio1",
+    "gapdh",
+    "npb",
+    "nmbb",
 ]
 
 
@@ -51,6 +105,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config", default="config/config.yaml", help="Path to config YAML.")
     parser.add_argument("--h5ad", default=None, help="Override input .h5ad path from config.")
     parser.add_argument("--genes", nargs="*", default=DEFAULT_GENES, help="Genes to plot.")
+    parser.add_argument(
+        "--extra-genes-csv",
+        nargs="*",
+        default=[],
+        help="CSV files with a names column; genes are appended to --genes.",
+    )
     parser.add_argument("--cell-type-label", default="RGC", help="Cell type label for RGCs.")
     parser.add_argument(
         "--use-existing-embedding",
@@ -66,6 +126,24 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--verbose", action="store_true", help="Print debug logging.")
     return parser.parse_args()
+
+
+def append_extra_genes(genes: list[str], csv_paths: list[str]) -> list[str]:
+    ordered = list(genes)
+    seen = {gene.lower() for gene in ordered}
+    for csv_path in csv_paths:
+        path = Path(csv_path)
+        if not path.exists():
+            raise FileNotFoundError(f"Extra genes CSV does not exist: {path}")
+        df = pd.read_csv(path)
+        if "names" not in df.columns:
+            raise KeyError(f"Extra genes CSV must contain a names column: {path}")
+        for gene in df["names"].dropna().astype(str):
+            key = gene.lower()
+            if key not in seen:
+                ordered.append(gene)
+                seen.add(key)
+    return ordered
 
 
 def gene_lookup(var_names: np.ndarray) -> dict[str, str]:
@@ -91,6 +169,8 @@ def run_sherine_strict_harmony_subset(
     resolution: float,
     random_state: int,
 ):
+    import harmonypy
+
     sc.pp.filter_cells(adata, min_counts=1)
     if sparse.issparse(adata.X):
         adata.X = adata.X.toarray()
@@ -140,6 +220,61 @@ def save_overview_umap(adata, color: str, output_path: Path, dpi: int) -> None:
     plt.close()
 
 
+def save_sample_highlight_umaps(
+    adata,
+    condition_column: str,
+    figures_dir: Path,
+    dpi: int,
+) -> None:
+    coords = adata.obsm["X_umap"]
+    condition_values = adata.obs[condition_column].astype(str).to_numpy()
+    sample_colors = {
+        "Control": "#1f77b4",
+        "LD": "#ff7f0e",
+        "NMDA": "#2ca02c",
+    }
+    ordered_samples = [
+        sample for sample in ["Control", "LD", "NMDA"] if sample in set(condition_values)
+    ]
+    ordered_samples.extend(
+        sorted(sample for sample in set(condition_values) if sample not in ordered_samples)
+    )
+
+    for sample in ordered_samples:
+        mask = condition_values == sample
+        fig, ax = plt.subplots(figsize=(8.95, 6.0))
+        ax.scatter(
+            coords[:, 0],
+            coords[:, 1],
+            c="#d9d9d9",
+            s=4,
+            linewidths=0,
+            alpha=0.35,
+        )
+        ax.scatter(
+            coords[mask, 0],
+            coords[mask, 1],
+            c=sample_colors.get(sample, "#1f77b4"),
+            s=8,
+            linewidths=0,
+            label=sample,
+        )
+        ax.set_title(f"{condition_column}: {sample}", fontsize=20)
+        ax.set_xlabel("UMAP1", fontsize=16)
+        ax.set_ylabel("UMAP2", fontsize=16)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.legend(loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=False)
+        for spine in ax.spines.values():
+            spine.set_linewidth(1.2)
+        fig.savefig(
+            figures_dir / f"rgc_umap_by_{condition_column}_{sample}_highlight.png",
+            dpi=dpi,
+            bbox_inches="tight",
+        )
+        plt.close(fig)
+
+
 def save_sherine_batch_subset_figures(
     adata,
     base_name: str,
@@ -186,11 +321,50 @@ def save_sherine_batch_subset_figures(
     plt.close(fig)
 
 
+def expression_limits(expr: np.ndarray) -> tuple[float, float]:
+    finite = expr[np.isfinite(expr)]
+    if finite.size == 0:
+        return 0.0, 1.0
+    vmin = float(np.nanmin(finite))
+    vmax = float(np.nanmax(finite))
+    if vmax <= vmin:
+        vmax = float(np.nanmax(expr))
+    return vmin, vmax
+
+
+def plot_gene_all_conditions(
+    adata,
+    gene: str,
+    config: dict,
+    output_path: Path,
+    dpi: int,
+) -> None:
+    fig = sc.pl.umap(
+        adata,
+        color=gene,
+        frameon=True,
+        cmap="viridis",
+        use_raw=False,
+        size=16,
+        show=False,
+        return_fig=True,
+    )
+    fig.set_size_inches(8.95, 6.0)
+    ax = fig.axes[0]
+    ax.set_title(gene, fontsize=24, pad=12)
+    ax.set_xlabel("UMAP1", fontsize=22)
+    ax.set_ylabel("UMAP2", fontsize=22)
+    for spine in ax.spines.values():
+        spine.set_linewidth(1.5)
+    fig.savefig(output_path, dpi=dpi, bbox_inches="tight")
+    plt.close(fig)
+
+
 def plot_gene_by_condition(
     adata,
     gene: str,
     condition_column: str,
-    conditions: list[str],
+    condition_panels: list[tuple[str, tuple[str, ...]]],
     config: dict,
     output_path: Path,
     dpi: int,
@@ -204,12 +378,20 @@ def plot_gene_by_condition(
     if not np.isfinite(vmax) or vmax <= vmin:
         vmax = float(np.nanmax(expr))
 
-    fig, axes = plt.subplots(1, len(conditions), figsize=(4.0 * len(conditions), 3.6))
-    if len(conditions) == 1:
-        axes = [axes]
+    n_panels = len(condition_panels)
+    n_cols = 2 if n_panels > 1 else 1
+    n_rows = int(np.ceil(n_panels / n_cols))
+    fig, axes = plt.subplots(
+        n_rows,
+        n_cols,
+        figsize=(4.4 * n_cols + 0.8, 3.8 * n_rows),
+    )
+    axes = np.atleast_1d(axes).ravel()
 
-    for ax, condition in zip(axes, conditions):
-        mask = adata.obs[condition_column].astype(str).to_numpy() == condition
+    sca = None
+    condition_values = adata.obs[condition_column].astype(str).to_numpy()
+    for ax, (label, values) in zip(axes[:n_panels], condition_panels):
+        mask = np.isin(condition_values, values)
         ax.scatter(
             coords[:, 0],
             coords[:, 1],
@@ -228,14 +410,18 @@ def plot_gene_by_condition(
             vmin=vmin,
             vmax=vmax,
         )
-        ax.set_title(f"{gene} | {condition}")
+        ax.set_title(f"{gene} | {label}")
         ax.set_xlabel("UMAP1")
         ax.set_ylabel("UMAP2")
         ax.set_xticks([])
         ax.set_yticks([])
-    cbar = fig.colorbar(sca, ax=axes, shrink=0.75, pad=0.02)
-    cbar.set_label("Expression")
-    fig.tight_layout()
+    for ax in axes[n_panels:]:
+        ax.set_visible(False)
+    fig.subplots_adjust(left=0.08, right=0.88, bottom=0.08, top=0.92, wspace=0.28, hspace=0.35)
+    if sca is not None:
+        cbar_ax = fig.add_axes([0.91, 0.2, 0.02, 0.6])
+        cbar = fig.colorbar(sca, cax=cbar_ax)
+        cbar.set_label("Expression")
     fig.savefig(output_path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)
 
@@ -281,11 +467,18 @@ def main() -> None:
     output_cfg = config.get("outputs", {})
     dpi = int(output_cfg.get("figure_dpi", 300))
     fmt = output_cfg.get("figure_format", "png")
+    requested_genes = append_extra_genes(list(args.genes), args.extra_genes_csv)
 
     save_overview_umap(
         adata_rgc,
         condition_column,
         figures_dir / f"rgc_umap_by_{condition_column}_strict.{fmt}",
+        dpi,
+    )
+    save_sample_highlight_umaps(
+        adata_rgc,
+        condition_column,
+        figures_dir,
         dpi,
     )
     save_overview_umap(
@@ -306,7 +499,7 @@ def main() -> None:
     lookup = gene_lookup(var_names)
     gene_records = []
     present_genes = []
-    for requested in args.genes:
+    for requested in requested_genes:
         actual = lookup.get(requested.lower())
         gene_records.append(
             {
@@ -332,27 +525,37 @@ def main() -> None:
     )
     cluster_counts.to_csv(tables_dir / "rgc_subcluster_counts_by_condition.csv", index=False)
 
-    conditions = [condition for condition in ["Control", "LD", "NMDA"] if condition in set(adata_rgc.obs[condition_column].astype(str))]
+    available_conditions = set(adata_rgc.obs[condition_column].astype(str))
+    condition_panels = [
+        (condition, (condition,))
+        for condition in ["Control", "LD", "NMDA"]
+        if condition in available_conditions
+    ]
+    if {"LD", "NMDA"}.issubset(available_conditions):
+        condition_panels.append(("LD + NMDA", ("LD", "NMDA")))
+    if not condition_panels:
+        condition_panels = [
+            (condition, (condition,))
+            for condition in sorted(available_conditions)
+        ]
+
     for gene in present_genes:
+        plot_gene_all_conditions(
+            adata_rgc,
+            gene,
+            config,
+            figures_dir / f"rgc_umap_gene_{gene}_all_conditions.{fmt}",
+            dpi,
+        )
         plot_gene_by_condition(
             adata_rgc,
             gene,
             condition_column,
-            conditions,
+            condition_panels,
             config,
             figures_dir / f"rgc_umap_gene_{gene}_split_by_condition.{fmt}",
             dpi,
         )
-        sc.pl.umap(
-            adata_rgc,
-            color=gene,
-            frameon=False,
-            cmap="viridis",
-            use_raw=False,
-            show=False,
-        )
-        plt.savefig(figures_dir / f"rgc_umap_gene_{gene}_all_conditions.{fmt}", dpi=dpi, bbox_inches="tight")
-        plt.close()
 
     LOGGER.info("Saved outputs to %s and %s", tables_dir, figures_dir)
 
