@@ -63,6 +63,45 @@ def fraction_expressed_gene_indices(matrix, min_fraction: float) -> np.ndarray:
     return np.where(fractions >= min_fraction)[0]
 
 
+def mean_and_fraction(matrix) -> tuple[np.ndarray, np.ndarray]:
+    if sparse.issparse(matrix):
+        means = np.asarray(matrix.mean(axis=0)).ravel()
+        fractions = np.asarray((matrix > 0).mean(axis=0)).ravel()
+    else:
+        values = np.asarray(matrix)
+        means = values.mean(axis=0)
+        fractions = (values > 0).mean(axis=0)
+    return means, fractions
+
+
+def thresholded_mean_gene_indices(
+    matrix,
+    min_mean: float,
+    min_fraction: float = 0.0,
+    min_genes: int = 1000,
+    max_genes: int = 2000,
+) -> np.ndarray:
+    means, fractions = mean_and_fraction(matrix)
+    fraction_ok = fractions >= min_fraction
+    primary = np.where((means > min_mean) & fraction_ok)[0]
+    primary = primary[np.argsort(means[primary])[::-1]]
+    if primary.size >= min_genes:
+        return primary[: min(max_genes, primary.size)]
+
+    filler = np.where(fraction_ok)[0]
+    filler = filler[np.argsort(means[filler])[::-1]]
+    ordered = list(primary)
+    seen = set(primary.tolist())
+    for idx in filler:
+        if int(idx) in seen:
+            continue
+        ordered.append(int(idx))
+        seen.add(int(idx))
+        if len(ordered) >= min_genes:
+            break
+    return np.array(ordered[:max_genes], dtype=int)
+
+
 def variance_gene_indices(matrix, n_top: int) -> np.ndarray:
     if sparse.issparse(matrix):
         means = np.asarray(matrix.mean(axis=0)).ravel()
@@ -197,6 +236,22 @@ def select_gene_sets(
         selected["expressed_frac_10pct"] = fraction_expressed_gene_indices(
             control_expression,
             0.10,
+        )
+    if "mean_gt_1p5_1k_2k" in requested_gene_sets:
+        selected["mean_gt_1p5_1k_2k"] = thresholded_mean_gene_indices(
+            control_expression,
+            min_mean=1.5,
+            min_fraction=0.0,
+            min_genes=1000,
+            max_genes=2000,
+        )
+    if "mean_gt_1p5_frac_gt_10pct_1k_2k" in requested_gene_sets:
+        selected["mean_gt_1p5_frac_gt_10pct_1k_2k"] = thresholded_mean_gene_indices(
+            control_expression,
+            min_mean=1.5,
+            min_fraction=0.10,
+            min_genes=1000,
+            max_genes=2000,
         )
     for gene_set in requested_gene_sets:
         if gene_set.startswith("enriched_top_"):
