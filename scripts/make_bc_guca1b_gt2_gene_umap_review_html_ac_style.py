@@ -31,6 +31,11 @@ def parse_args() -> argparse.Namespace:
         default="results/tables/bc_guca1b_gt2_ac_style_gene_umaps/bc_guca1b_gt2_deg_top1_gene_match_report.csv",
         help="Gene match report from plot_bc_guca1b_gt2_deg_genes.py.",
     )
+    parser.add_argument(
+        "--manual-match-report",
+        default="results/tables/bc_guca1b_gt2_ac_style_gene_umaps/bc_guca1b_gt2_manual_marker_gene_match_report.csv",
+        help="Optional manual marker gene match report.",
+    )
     parser.add_argument("--output", default=None, help="Output HTML path.")
     return parser.parse_args()
 
@@ -72,6 +77,19 @@ def load_gene_records(match_report: Path) -> pd.DataFrame:
     return df
 
 
+def load_combined_gene_records(match_report: Path, manual_match_report: Path) -> pd.DataFrame:
+    frames = []
+    if manual_match_report.exists():
+        manual = load_gene_records(manual_match_report)
+        manual["source_group"] = "Manual Marker Genes"
+        frames.append(manual)
+    deg = load_gene_records(match_report)
+    deg["source_group"] = "DEG Top1 Genes"
+    frames.append(deg)
+    combined = pd.concat(frames, ignore_index=True)
+    return combined.drop_duplicates(subset=["requested_gene"], keep="first").reset_index(drop=True)
+
+
 def top1_gene_groups(tables_dir: Path) -> dict[str, list[str]]:
     groups = {}
     for label, filename in [
@@ -89,6 +107,13 @@ def top1_gene_groups(tables_dir: Path) -> dict[str, list[str]]:
         if genes:
             groups[label] = genes
     return groups
+
+
+def manual_gene_groups(df: pd.DataFrame) -> dict[str, list[str]]:
+    if "source_group" not in df.columns:
+        return {}
+    genes = df.loc[df["source_group"] == "Manual Marker Genes", "requested_gene"].astype(str).tolist()
+    return {"Manual Marker Genes": genes} if genes else {}
 
 
 def build_index(df: pd.DataFrame, groups: dict[str, list[str]]) -> str:
@@ -275,6 +300,49 @@ def build_cluster_counts(tables_dir: Path) -> str:
     """
 
 
+def build_count_table(path: Path, title: str, label: str = "Sample") -> str:
+    if not path.exists():
+        return ""
+    df = pd.read_csv(path).fillna("")
+    rows = []
+    total = 0
+    for row in df.itertuples(index=False):
+        name = str(row.sample)
+        n_cells = int(row.n_cells)
+        total += n_cells
+        rows.append(
+            f"""
+            <tr>
+              <td>{html.escape(name)}</td>
+              <td>{n_cells:,}</td>
+            </tr>
+            """
+        )
+    return f"""
+    <section class="overview sample-count-card">
+      <div class="card-head">
+        <h2>{html.escape(title)}</h2>
+        <span>Total {total:,} cells</span>
+      </div>
+      <div class="cluster-count-grid">
+        <table class="small-table cluster-count-table">
+          <thead><tr><th>{html.escape(label)}</th><th>Cells</th></tr></thead>
+          <tbody>{''.join(rows)}</tbody>
+        </table>
+      </div>
+    </section>
+    """
+
+
+def build_sample_counts(tables_dir: Path) -> str:
+    return f"""
+    <div class="count-card-grid">
+      {build_count_table(tables_dir / "bc_guca1b_gt2_counts_by_9_sample.csv", "Cells Per 9-Sample Label", "Sample")}
+      {build_count_table(tables_dir / "bc_guca1b_gt2_counts_by_renamed_samples.csv", "Cells Per Renamed Sample", "Condition")}
+    </div>
+    """
+
+
 def format_float(value, digits: int = 3) -> str:
     try:
         return f"{float(value):.{digits}g}"
@@ -427,6 +495,8 @@ def css() -> str:
     .deg-card .image-panel img { min-width: 500px; }
     .cluster-count-grid { max-height: 360px; overflow: auto; border: 1px solid #e8edf3; border-radius: 6px; }
     .cluster-count-table { font-size: 13px; }
+    .count-card-grid { display: grid; grid-template-columns: repeat(2, minmax(260px, 1fr)); gap: 12px; margin-bottom: 14px; }
+    .sample-count-card { margin-bottom: 0; }
     .small-table-wrap { overflow: auto; max-height: 480px; border: 1px solid #e8edf3; border-radius: 6px; margin-top: 10px; }
     .small-table-wrap h3 { margin: 8px; font-size: 14px; }
     .small-table { width: 100%; border-collapse: collapse; font-size: 12px; }
@@ -436,7 +506,7 @@ def css() -> str:
     @media (max-width: 1000px) {
       .gene-layout { grid-template-columns: 1fr; }
       aside { position: static; max-height: none; }
-      .image-grid, .deg-comparison-grid { grid-template-columns: 1fr; }
+      .image-grid, .deg-comparison-grid, .count-card-grid { grid-template-columns: 1fr; }
       .deg-card .image-panel img { min-width: 0; }
     }
     """
@@ -489,8 +559,9 @@ def main() -> None:
     output = Path(args.output) if args.output else figures_dir / "bc_guca1b_gt2_ac_style_gene_umap_review.html"
     output_dir = output.parent
     match_report = Path(args.match_report)
-    df = load_gene_records(match_report)
-    groups = top1_gene_groups(tables_dir)
+    manual_match_report = Path(args.manual_match_report)
+    df = load_combined_gene_records(match_report, manual_match_report)
+    groups = {**manual_gene_groups(df), **top1_gene_groups(tables_dir)}
 
     document = f"""<!doctype html>
 <html lang="en">
@@ -519,6 +590,7 @@ def main() -> None:
           <section>
             {build_overview(figures_dir, output_dir)}
             {build_cluster_counts(tables_dir)}
+            {build_sample_counts(tables_dir)}
             {build_cards(df, figures_dir, groups, output_dir)}
           </section>
         </div>
