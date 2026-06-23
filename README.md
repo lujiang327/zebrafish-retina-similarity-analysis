@@ -9,18 +9,35 @@ than across whole samples globally.
 
 ## Reference Environment
 
-The reference repository README reports `scanpy 1.9.3` in its debugging output.
-This repo prioritizes matching that Scanpy workflow and pins a compatible
-AnnData release:
+Most recent analyses in this workspace were run in the conda environment
+`zebrafish-singlecell-portal`. Key package versions:
 
-- Python 3.11 recommended
-- `scanpy==1.9.3`
-- `anndata==0.8.0`
+```text
+python        3.11.15
+scanpy        1.10.4
+anndata       0.11.3
+numpy         2.1.3
+pandas        2.2.3
+scipy         1.14.1
+matplotlib    3.10.9
+seaborn       0.13.2
+scikit-learn  1.9.0
+numba         0.65.1
+h5py          3.16.0
+igraph        1.0.0
+leidenalg     0.12.0
+harmonypy     2.0.0
+Pillow        12.2.0
+```
 
-Note: the paper reports `AnnData 0.12.8`, but that version does not import with
-`scanpy==1.9.3` because AnnData 0.12 removed APIs used by old Scanpy. If exact
-paper-environment matching becomes necessary, use a modern Scanpy release
-instead of 1.9.3.
+When running Scanpy scripts on macOS in this environment, use writable cache
+locations to avoid Matplotlib/Numba cache errors:
+
+```bash
+export MPLCONFIGDIR=/private/tmp/retina_mpl
+export NUMBA_CACHE_DIR=/private/tmp/retina_numba_cache
+export PYTHONPYCACHEPREFIX=/private/tmp/retina_pycache
+```
 
 Install:
 
@@ -191,8 +208,37 @@ Main outputs:
 results/tables/per_cell_fidelity_scores.csv
 results/tables/per_cell_fidelity_summary.csv
 results/tables/per_cell_fidelity_skipped_cell_types.csv
+results/tables/per_cell_fidelity_gene_sets.csv
 results/figures/per_cell_fidelity_*.png
 results/figures/umap_per_cell_fidelity_*.png
+```
+
+### Gene-Set Experiment
+
+The notebook [03_per_cell_fidelity.ipynb](notebooks/03_per_cell_fidelity.ipynb)
+also contains an expressed-gene-set experiment. In addition to `hvg_1000` and
+`hvg_2000`, it tests:
+
+- `mean_gt_1p5_1k_2k`
+- `mean_gt_1p5_frac_gt_10pct_1k_2k`
+
+These sets are selected separately for each cell type from its Control reference
+cells. Genes with mean expression greater than 1.5 are preferred, optionally
+requiring expression in at least 10% of reference cells. The set is capped at
+2,000 genes and filled toward 1,000 genes with the next-highest expressed genes
+when the strict threshold returns fewer than 1,000.
+
+The comparison run is saved under:
+
+```text
+results/tables/per_cell_fidelity_gene_set_experiment/
+results/figures/per_cell_fidelity_gene_set_experiment/
+```
+
+The selected genes for each cell type and gene set are listed in:
+
+```text
+results/tables/per_cell_fidelity_gene_set_experiment/per_cell_fidelity_gene_sets.csv
 ```
 
 ## Analysis 3: Three-Group Similarity Views
@@ -225,6 +271,117 @@ results/tables/three_group_centroids.csv
 results/figures/three_group_control_referenced_*.png
 results/figures/three_group_delta_nmda_minus_ld_*.png
 results/figures/three_group_centroid_pca_*.png
+```
+
+## Subtype HTML Reviewers
+
+Several subtype-focused HTML viewers were generated to review UMAPs, marker
+genes, DEG-selected markers, dotplots, and sample/cluster counts.
+
+### RGC
+
+Input h5ad:
+
+```text
+/Users/hoanglab/Desktop/vscode_projects/zebrafish-singlecell-portal/corrected_RGC_annotated_clustered_corrected_doubletRemoved_Zebrafishes.h5ad
+```
+
+Main viewer:
+
+```text
+results/figures/rgc_subtype_gene_umaps/rgc_gene_umap_review.html
+```
+
+### AC
+
+Input h5ad:
+
+```text
+/Users/hoanglab/Desktop/vscode_projects/zebrafish-singlecell-portal/AC_subtypes_reproduced.h5ad
+```
+
+The AC file matches the paper-level final counts:
+
+```text
+Control  10,035
+LD          236
+NMDA        867
+```
+
+Main viewer:
+
+```text
+results/figures/ac_subtype_gene_umaps/ac_gene_umap_review.html
+```
+
+### BC
+
+The BC workflow starts from:
+
+```text
+/Users/hoanglab/Desktop/vscode_projects/zebrafish-singlecell-portal/BC_annotated_clustered_corrected_doubletRemoved_Zebrafishes.h5ad
+```
+
+The preferred BC preprocessing uses Harmony on a 9-sample label, splitting the
+original `Zebra` sample into `Zebra_LD` and `Zebra_NMDA` before Harmony. The
+reprocessed h5ad is:
+
+```text
+results/h5ad/bc_strict_harmony_by_9_samples_reprocessed.h5ad
+```
+
+After reviewing photoreceptor-like contamination markers, the current BC viewer
+uses the object filtered by:
+
+```text
+guca1b > 2.0
+```
+
+Filtered h5ad:
+
+```text
+results/h5ad/bc_9_sample_guca1b_gt2_filtered.h5ad
+```
+
+Main AC-style BC viewer:
+
+```text
+results/figures/bc_guca1b_gt2_ac_style_gene_umaps/bc_guca1b_gt2_ac_style_gene_umap_review.html
+```
+
+This viewer includes:
+
+- all-condition and split-condition gene UMAPs
+- manually requested marker-gene UMAPs
+- top1 DEG gene UMAPs
+- Wilcoxon score, specificity, and max-other DEG dotplots
+- cell counts by cluster
+- cell counts by 9-sample label
+- cell counts by `Control`, `LD`, and `NMDA`
+- cell counts per cluster split by `Control`, `LD`, and `NMDA`
+
+Useful tables:
+
+```text
+results/tables/bc_guca1b_gt2_ac_style_gene_umaps/bc_guca1b_gt2_counts_by_9_sample.csv
+results/tables/bc_guca1b_gt2_ac_style_gene_umaps/bc_guca1b_gt2_counts_by_renamed_samples.csv
+results/tables/bc_guca1b_gt2_ac_style_gene_umaps/bc_guca1b_gt2_cluster_counts_by_renamed_samples.csv
+results/tables/bc_guca1b_gt2_ac_style_gene_umaps/bc_guca1b_gt2_manual_marker_gene_match_report.csv
+```
+
+The custom top1 marker dotplot renderer keeps one column per cluster-marker
+choice. This avoids the default `scanpy.pl.dotplot` behavior that collapses
+duplicate marker genes into one column.
+
+Key scripts:
+
+```text
+scripts/reprocess_bc_strict_harmony.py
+scripts/filter_bc_photoreceptor_like_cells.py
+scripts/find_bc_guca1b_gt2_cluster_markers_ac_style.py
+scripts/plot_bc_guca1b_gt2_deg_genes_ac_style.py
+scripts/plot_bc_guca1b_gt2_manual_marker_genes.py
+scripts/make_bc_guca1b_gt2_gene_umap_review_html_ac_style.py
 ```
 
 ## Metadata Configuration
@@ -262,34 +419,6 @@ Likely contaminants are excluded from retinal-focused summaries:
 - pericyte
 - melanocyte
 - oligodendrocyte
-
-## Planned Analysis Modules
-
-Analysis 1: pseudobulk cell-type similarity
-
-- For each retinal cell type, average expression within Control, LD, and NMDA.
-- Compare Control-LD, Control-NMDA, and LD-NMDA.
-- Test Pearson, Spearman, and cosine similarity.
-- Repeat over HVGs, marker genes, and shared expressed genes.
-
-Analysis 2: per-cell fidelity score
-
-- Build a same-cell-type Control reference centroid.
-- Score each Control, LD, and NMDA cell against that centroid.
-- Include held-out Control-to-Control scores.
-- Save per-cell CSVs and violin/box plots.
-
-Analysis 3: model-based fidelity
-
-- Use One-Class SVM, logistic regression or random forest when appropriate,
-  and kNN reference mapping as secondary checks.
-- Keep correlation/centroid scores as the main interpretable result.
-
-Analysis 4: robustness
-
-- Sweep HVG counts, gene sets, similarity metrics, minimum cell thresholds,
-  and optional condition-balanced downsampling.
-- Flag low-cell-count cell types and unexpectedly low Control-to-Control scores.
 
 ## Notes
 
