@@ -47,7 +47,51 @@ MANUAL_GENES = [
     "acta2",
     "Vsx1",
     "Vsx2",
+    "vsx1",
+    "vsx2",
+    "gramd1b",
+    "gram6a",
+    "gram6b",
+    "trpm1a",
+    "trpm1b",
+    "nyx",
+    "rgs11",
+    "prkca",
+    "grik1",
+    "gria1",
+    "gria2",
+    "cabp5",
+    "calb1",
+    "calb2",
+    "cplx3a",
+    "cplx3b",
+    "sv2a",
+    "sv2b",
+    "syta1",
+    "cadm1a",
+    "cadm1b",
+    "cadm2a",
+    "cadm2b",
+    "cadm3a",
+    "cadm3b",
+    "pcdh9",
+    "pcdh17",
+    "pcdh19",
+    "nrxn1a",
+    "nrcn1b",
+    "nrxn2a",
+    "nrxn3b",
+    "nlgna",
+    "nlgn1",
+    "nlgn2a",
+    "nlgn3b",
+    "nlgn4a",
+    "isl1",
+    "foxn4",
+    "pax6a",
+    "pax6b",
 ]
+ALIASES = {"gram6a": "grm6a", "gram6b": "grm6b", "nrcn1b": "nrxn1b"}
 
 
 def parse_args() -> argparse.Namespace:
@@ -57,6 +101,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--h5ad", default=DEFAULT_H5AD)
     parser.add_argument("--condition-key", default="renamed_samples")
     parser.add_argument("--sample-key", default="sample_split_zebra")
+    parser.add_argument("--cluster-key", default="leiden")
     parser.add_argument("--figures-dir", default="results/figures/bc_guca1b_gt2_ac_style_gene_umaps")
     parser.add_argument("--tables-dir", default="results/tables/bc_guca1b_gt2_ac_style_gene_umaps")
     parser.add_argument("--dpi", type=int, default=300)
@@ -69,6 +114,31 @@ def ordered_counts(adata, key: str, preferred: list[str] | None = None) -> pd.Da
     ordered = [name for name in (preferred or []) if name in counts.index]
     ordered.extend(sorted(name for name in counts.index if name not in ordered))
     return pd.DataFrame({"sample": ordered, "n_cells": [int(counts[name]) for name in ordered]})
+
+
+def cluster_condition_counts(adata, cluster_key: str, condition_key: str) -> pd.DataFrame:
+    table = pd.crosstab(
+        adata.obs[cluster_key].astype(str),
+        adata.obs[condition_key].astype(str),
+    )
+    for condition in ["Control", "LD", "NMDA"]:
+        if condition not in table.columns:
+            table[condition] = 0
+    table = table[["Control", "LD", "NMDA"]]
+    table["total"] = table.sum(axis=1)
+    table = table.reset_index().rename(columns={cluster_key: "cluster"})
+    table["cluster_sort"] = table["cluster"].astype(int)
+    return table.sort_values("cluster_sort").drop(columns="cluster_sort")
+
+
+def resolve_gene(lookup: dict[str, str], requested: str) -> tuple[str | None, str]:
+    direct = lookup.get(requested.lower())
+    if direct is not None:
+        return direct, ""
+    alias = ALIASES.get(requested.lower())
+    if alias:
+        return lookup.get(alias.lower()), alias
+    return None, ""
 
 
 def main() -> None:
@@ -91,15 +161,20 @@ def main() -> None:
         tables_dir / "bc_guca1b_gt2_counts_by_renamed_samples.csv",
         index=False,
     )
+    cluster_condition_counts(adata, args.cluster_key, args.condition_key).to_csv(
+        tables_dir / "bc_guca1b_gt2_cluster_counts_by_renamed_samples.csv",
+        index=False,
+    )
 
     lookup = gene_lookup(expression_matrix_and_names(adata)[1])
     records = []
     present_genes = []
     for requested in MANUAL_GENES:
-        matched = lookup.get(requested.lower())
+        matched, alias = resolve_gene(lookup, requested)
         records.append(
             {
                 "requested_gene": requested,
+                "alias_used": alias,
                 "matched_gene": matched or "",
                 "present": matched is not None,
                 "expression_source": "raw" if adata.raw is not None else "X",

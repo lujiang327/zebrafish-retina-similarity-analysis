@@ -343,6 +343,40 @@ def build_sample_counts(tables_dir: Path) -> str:
     """
 
 
+def build_cluster_condition_counts(tables_dir: Path) -> str:
+    path = tables_dir / "bc_guca1b_gt2_cluster_counts_by_renamed_samples.csv"
+    if not path.exists():
+        return ""
+    df = pd.read_csv(path).fillna(0)
+    rows = []
+    for row in df.itertuples(index=False):
+        rows.append(
+            f"""
+            <tr>
+              <td>{html.escape(str(row.cluster))}</td>
+              <td>{int(row.Control):,}</td>
+              <td>{int(row.LD):,}</td>
+              <td>{int(row.NMDA):,}</td>
+              <td>{int(row.total):,}</td>
+            </tr>
+            """
+        )
+    return f"""
+    <section class="overview" id="cluster-condition-counts">
+      <div class="card-head">
+        <h2>Cells Per Cluster By Condition</h2>
+        <span>Control, LD, NMDA</span>
+      </div>
+      <div class="cluster-count-grid">
+        <table class="small-table cluster-count-table">
+          <thead><tr><th>Cluster</th><th>Control</th><th>LD</th><th>NMDA</th><th>Total</th></tr></thead>
+          <tbody>{''.join(rows)}</tbody>
+        </table>
+      </div>
+    </section>
+    """
+
+
 def format_float(value, digits: int = 3) -> str:
     try:
         return f"{float(value):.{digits}g}"
@@ -591,6 +625,7 @@ def main() -> None:
             {build_overview(figures_dir, output_dir)}
             {build_cluster_counts(tables_dir)}
             {build_sample_counts(tables_dir)}
+            {build_cluster_condition_counts(tables_dir)}
             {build_cards(df, figures_dir, groups, output_dir)}
           </section>
         </div>
