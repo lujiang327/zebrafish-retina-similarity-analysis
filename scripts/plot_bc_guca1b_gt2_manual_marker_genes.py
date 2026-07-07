@@ -90,6 +90,14 @@ MANUAL_GENES = [
     "foxn4",
     "pax6a",
     "pax6b",
+    "grik1a",
+    "grik1b",
+    "grik2",
+    "grik4",
+    "grik5",
+    "prkcaa",
+    "prkcba",
+    "prkcbb",
 ]
 ALIASES = {"gram6a": "grm6a", "gram6b": "grm6b", "nrcn1b": "nrxn1b"}
 

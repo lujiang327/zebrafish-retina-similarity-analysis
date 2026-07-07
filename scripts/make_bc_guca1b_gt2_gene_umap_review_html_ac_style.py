@@ -9,6 +9,7 @@ import mimetypes
 import os
 from pathlib import Path
 import re
+import shutil
 import struct
 
 import pandas as pd
@@ -36,6 +37,8 @@ def parse_args() -> argparse.Namespace:
         default="results/tables/bc_guca1b_gt2_ac_style_gene_umaps/bc_guca1b_gt2_manual_marker_gene_match_report.csv",
         help="Optional manual marker gene match report.",
     )
+    parser.add_argument("--page-title", default="BC guca1b > 2.0 DEG Gene UMAP Review")
+    parser.add_argument("--cluster-label", default="BC guca1b > 2.0 Leiden clusters, grouped by leiden")
     parser.add_argument("--output", default=None, help="Output HTML path.")
     return parser.parse_args()
 
@@ -67,6 +70,20 @@ def image_size_attrs(path: Path) -> str:
 
 def href_for(path: Path, output_dir: Path) -> str:
     return os.path.relpath(path, output_dir)
+
+
+def downloadable_copy(path: Path, output_dir: Path) -> Path:
+    downloads_dir = output_dir / "downloads"
+    downloads_dir.mkdir(parents=True, exist_ok=True)
+    destination = downloads_dir / path.name
+    if path.resolve() != destination.resolve():
+        shutil.copy2(path, destination)
+    return destination
+
+
+def download_link(label: str, path: Path, output_dir: Path) -> str:
+    local_path = downloadable_copy(path, output_dir)
+    return f'<a href="{html.escape(href_for(local_path, output_dir))}" download>{html.escape(label)}</a>'
 
 
 def load_gene_records(match_report: Path) -> pd.DataFrame:
@@ -437,7 +454,7 @@ def build_top1_table(path: Path, title: str) -> str:
     """
 
 
-def build_deg_tab(figures_dir: Path, tables_dir: Path, output_dir: Path) -> str:
+def build_deg_tab(figures_dir: Path, tables_dir: Path, output_dir: Path, cluster_label: str) -> str:
     score_dotplot = figures_dir / "bc_guca1b_gt2_deg_score_top1_marker_dotplot.png"
     specific_dotplot = figures_dir / "bc_guca1b_gt2_deg_specific_top1_marker_dotplot.png"
     max_other_dotplot = figures_dir / "bc_guca1b_gt2_deg_max_other_top1_marker_dotplot.png"
@@ -447,20 +464,23 @@ def build_deg_tab(figures_dir: Path, tables_dir: Path, output_dir: Path) -> str:
     links = []
     for label, path in [
         ("Download Wilcoxon score top1 CSV", score_top1),
+        ("Download Wilcoxon score top100/cluster CSV", tables_dir / "bc_guca1b_gt2_deg_score_top100_markers.csv"),
         ("Download specificity top1 CSV", specific_top1),
+        ("Download specificity top100/cluster CSV", tables_dir / "bc_guca1b_gt2_deg_specific_top100_markers.csv"),
         ("Download max-other top1 CSV", max_other_top1),
+        ("Download max-other top100/cluster CSV", tables_dir / "bc_guca1b_gt2_deg_max_other_top100_markers.csv"),
         ("Download filtered DEG CSV", tables_dir / "bc_guca1b_gt2_deg_markers_filtered.csv"),
         ("Download all DEG CSV", tables_dir / "bc_guca1b_gt2_deg_markers_all.csv"),
         ("Download DEG parameters CSV", tables_dir / "bc_guca1b_gt2_deg_parameters.csv"),
     ]:
         if path.exists():
-            links.append(f'<a href="{html.escape(href_for(path, output_dir))}" download>{label}</a>')
+            links.append(download_link(label, path, output_dir))
     link_block = f'<div class="report-links">{" ".join(links)}</div>' if links else ""
     return f"""
     <article class="plot-card deg-card">
       <div class="card-head">
         <h2>BC DEG Top Markers</h2>
-        <span>BC guca1b > 2.0 Leiden clusters, grouped by leiden</span>
+        <span>{html.escape(cluster_label)}</span>
       </div>
       <div class="method-note">
         <strong>Wilcoxon score ranking:</strong>
@@ -597,17 +617,18 @@ def main() -> None:
     df = load_combined_gene_records(match_report, manual_match_report)
     groups = {**manual_gene_groups(df), **top1_gene_groups(tables_dir)}
 
+    page_title = args.page_title
     document = f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>BC guca1b > 2.0 DEG Gene UMAP Review</title>
+  <title>{html.escape(page_title)}</title>
   <style>{css()}</style>
 </head>
 <body>
   <header>
-    <h1>BC guca1b > 2.0 DEG Gene UMAP Review</h1>
+    <h1>{html.escape(page_title)}</h1>
     <nav class="tabs">
       <button class="tab-button active" data-tab="gene-tab">Gene UMAPs</button>
       <button class="tab-button" data-tab="deg-tab">DEG Top Markers</button>
@@ -631,7 +652,7 @@ def main() -> None:
         </div>
       </div>
       <div id="deg-tab" class="tab-panel">
-        {build_deg_tab(figures_dir, tables_dir, output_dir)}
+        {build_deg_tab(figures_dir, tables_dir, output_dir, args.cluster_label)}
       </div>
     </section>
   </main>
